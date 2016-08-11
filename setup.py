@@ -25,7 +25,7 @@ setup(
     version='0.1',
     description='markdown XBlock',
     packages=[
-        'markdown',
+        'mdown',
     ],
     install_requires=[
         'XBlock',
@@ -34,8 +34,8 @@ setup(
     ],
     entry_points={
         'xblock.v1': [
-            'markdown = markdown:MarkdownXBlock',
+            'mdown = mdown:MarkdownXBlock',
         ]
     },
-    package_data=package_data("markdown", ["static", "public"]),
+    package_data=package_data("mdown", ["static", "public"]),
 )

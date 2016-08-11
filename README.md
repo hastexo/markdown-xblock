@@ -30,7 +30,7 @@ virtualenv.
     "annotatable",
     "videoalpha",
     "openassessment",
-    "markdown"
+    "mdown"
    ]
    ```
 

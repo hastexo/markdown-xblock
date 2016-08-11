@@ -125,7 +125,7 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
         return [
             ("MarkdownXBlock",
              """<vertical_demo>
-                <markdown>
+                <mdown>
                     # This is an h1
 
                     ## This is an h2
@@ -147,7 +147,7 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
                     [Link to cat](http://i.imgur.com/3xVUnyA.jpg)
 
                     ![Cat](http://i.imgur.com/3xVUnyA.jpg)
-                </markdown>
+                </mdown>
                 </vertical_demo>
              """),
         ]
