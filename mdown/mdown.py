@@ -91,6 +91,7 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
             from xmodule.exceptions import NotFoundError
             from opaque_keys import InvalidKeyError
             try:
+                course_id = self.xmodule_runtime.course_id
                 loc = StaticContent.compute_location(course_id, self.filename)
                 asset = contentstore().find(loc)
                 content = asset.data
