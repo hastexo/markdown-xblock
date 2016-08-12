@@ -19,23 +19,22 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
     """
     display_name = String(
         help="This name appears in the horizontal navigation at the top of the page.",
-        default="",
+        default="Markdown",
         scope=Scope.settings)
+    filename = String(
+        help="Relative path to a markdown file uploaded to the static store.  For example, \"markdown_file.md\".",
+        default="",
+        scope=Scope.content)
     content = String(
         help="Markdown content to display for this module.",
         default=u"",
-        scope=Scope.content)
-    filename = String(
-        help="Relative path to a markdown file in the static store.",
-        default="",
+        multiline_editor=True,
         scope=Scope.content)
 
     editable_fields = (
         'display_name',
-        'content',
-        'filename')
-
-    has_author_view = True
+        'filename',
+        'content')
 
     @classmethod
     def parse_xml(cls, node, runtime, keys, id_generator):
@@ -83,9 +82,9 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
 
         """
         if self.filename:
-            # These can only be imported when the XBlock is running on the LMS.
-            # Do it at runtime so that the workbench is usable for regular XML
-            # content.
+            # These can only be imported when the XBlock is running on the LMS
+            # or CMS.  Do it at runtime so that the workbench is usable for
+            # regular XML content.
             from xmodule.contentstore.content import StaticContent
             from xmodule.contentstore.django import contentstore
             from xmodule.exceptions import NotFoundError
@@ -100,25 +99,16 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
         else:
             content = self.content
 
+        html_content = ""
         if content:
-            html = markdown2.markdown(content)
+            html_content = markdown2.markdown(content)
 
         # Render the HTML template
-        context = {'content': html}
+        context = {'content': html_content}
         html = loader.render_template('templates/main.html', context)
         frag = Fragment(html)
 
         return frag
-
-    def author_view(self, context=None):
-        """
-        Studio preview.
-
-        """
-        if self.filename:
-            return Fragment(u"<em>If filename is set, no preview is available.</em>")
-        else:
-            return self.student_view(context)
 
     @staticmethod
     def workbench_scenarios():
