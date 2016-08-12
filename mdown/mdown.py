@@ -44,35 +44,22 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
         """
         block = runtime.construct_xblock_from_class(cls, keys)
 
-        # The base implementation: child nodes become child blocks.
-        # Or fields, if they belong to the right namespace.
-        for child in node:
-            if child.tag is etree.Comment:
-                continue
-            qname = etree.QName(child)
-            tag = qname.localname
-            namespace = qname.namespace
-
-            if namespace == XML_NAMESPACES["option"]:
-                cls._set_field_if_present(block, tag, child.text, child.attrib)
-            else:
-                block.runtime.add_node_as_child(block, child, id_generator)
-
-        # Attributes become fields.
+        # Load the data
         for name, value in node.items():
-            cls._set_field_if_present(block, name, value, {})
+            if name in block.fields:
+                value = (block.fields[name]).from_string(value)
+                setattr(block, name, value)
 
-        # Text content becomes "content", if such a field exists.
-        if "content" in block.fields and block.fields["content"].scope == Scope.content:
-            text = node.text
+        # Load content
+        text = node.text
+        if text:
+            # Fix up whitespace.
+            if text[0] == "\n":
+                text = text[1:]
+            text.rstrip()
+            text = textwrap.dedent(text)
             if text:
-                # Fix up whitespace.
-                if text[0] == "\n":
-                    text = text[1:]
-                text.rstrip()
-                text = textwrap.dedent(text)
-                if text:
-                    block.content = text
+                block.content = text
 
         return block
 
