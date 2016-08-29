@@ -3,7 +3,7 @@ import markdown2
 import textwrap
 
 from xblock.core import XBlock
-from xblock.fields import Scope, String
+from xblock.fields import Scope, String, List
 from xblock.fragment import Fragment
 from xblockutils.resources import ResourceLoader
 from xblockutils.studio_editable import StudioEditableXBlockMixin
@@ -30,11 +30,45 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
         default=u"",
         multiline_editor=True,
         scope=Scope.content)
+    extras = List(
+        help="Markdown2 module extras to turn on for the instance.",
+        list_style="set",
+        list_values_provider=lambda _: [
+            # Taken from https://github.com/trentm/python-markdown2/wiki/Extras
+            {"display_name": "Code Friendly", "value": "code-friendly"},
+            {"display_name": "Fenced Code Blocks", "value": "fenced-code-blocks"},
+            {"display_name": "Footnotes", "value": "footnotes"},
+            {"display_name": "GFM Tables", "value": "tables"},
+            {"display_name": "File Variables", "value": "use-file-vars"},
+            {"display_name": "Cuddled lists", "value": "cuddled-lists"},
+            {"display_name": "Google Code Wiki Tables", "value": "wiki-tables"},
+            {"display_name": "Header IDs", "value": "header-ids"},
+            {"display_name": "HTML classes", "value": "html-classes"},
+            {"display_name": "Link patterns", "value": "link-patterns"},
+            {"display_name": "Markdown in HTML", "value": "markdown-in-html"},
+            {"display_name": "Metadata", "value": "metadata"},
+            {"display_name": "No Follow", "value": "nofollow"},
+            {"display_name": "Pyshell", "value": "pyshell"},
+            {"display_name": "SmartyPants", "value": "smarty-pants"},
+            {"display_name": "Spoiler Block", "value": "spoiler"},
+            {"display_name": "Table of Contents", "value": "toc"},
+            {"display_name": "Twitter Tag Friendly", "value": "tag-friendly"},
+            {"display_name": "XML", "value": "xml"},
+        ],
+        default=[
+            "code-friendly",
+            "fenced-code-blocks",
+            "footnotes",
+            "tables",
+            "use-file-vars",
+        ],
+        scope=Scope.content)
 
     editable_fields = (
         'display_name',
         'filename',
-        'content')
+        'content',
+        'extras')
 
     @classmethod
     def parse_xml(cls, node, runtime, keys, id_generator):
@@ -88,12 +122,15 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
 
         html_content = ""
         if content:
-            html_content = markdown2.markdown(content)
+            html_content = markdown2.markdown(content, extras=self.extras)
 
         # Render the HTML template
         context = {'content': html_content}
         html = loader.render_template('templates/main.html', context)
         frag = Fragment(html)
+
+        if "fenced-code-blocks" in self.extras:
+            frag.add_css_url(self.runtime.local_resource_url(self, 'public/css/pygments.css'))
 
         return frag
 
@@ -111,6 +148,19 @@ class MarkdownXBlock(StudioEditableXBlockMixin, XBlock):
                     This is a regular paragraph.
 
                         This is a code block.
+
+                    ```
+                    #!/bin/bash
+
+                    echo "This is a fenced code block.
+                    ```
+
+                    ```python
+                    from xblock.core import XBlock
+
+                    class MarkdownXBlock(XBlock):
+                        "This is a colored fence block."
+                    ```
 
                     > This is a blockquote.
 
