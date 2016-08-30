@@ -30,7 +30,8 @@ setup(
     install_requires=[
         'XBlock',
         'xblock-utils',
-        'markdown2>=2.3.0'
+        'markdown2>=2.3.0',
+        'Pygments>=2.0.2'
     ],
     entry_points={
         'xblock.v1': [
