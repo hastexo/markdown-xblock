@@ -31,7 +31,7 @@ setup(
         'XBlock',
         'xblock-utils',
         'markdown2>=2.3.0',
-        'Pygments>=2.0.2'
+        'Pygments>=2.0.1'
     ],
     entry_points={
         'xblock.v1': [
