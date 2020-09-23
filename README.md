@@ -1,3 +1,7 @@
+> This XBlock is **unmaintained** and **retired.** For a contemporary
+> XBlock that offers very similar functionality, please see
+> https://github.com/citynetwork/markdown-xblock.
+
 # markdown XBlock
 
 The markdown [XBlock](https://xblock.readthedocs.org/en/latest/) allows [Open
